@@ -12,9 +12,12 @@ function saveTasks($dataFile, $tasks) {
     file_put_contents($dataFile, json_encode($tasks, JSON_PRETTY_PRINT));
 }
 
-function addTask(&$tasks, $title, $due_date = null) {
+function addTask(&$tasks, $title, $priority = 3, $due_date = null) {
     $newId = count($tasks) ? max(array_column($tasks, 'id')) + 1 : 1;
-    $task = ["id" => $newId, "title" => $title, "status" => "open", "due_date" => $due_date];
+    $task = [
+        "id" => $newId, "title" => $title, "status" => "open",
+        "priority" => $priority, "due_date" => $due_date,
+    ];
     $tasks[] = $task;
     return $task;
 }
@@ -30,8 +33,9 @@ switch ($action) {
 
     case 'add':
         $input = json_decode(file_get_contents('php://input'), true);
-        $due = $input['due_date'] ?? null;
-        $task = addTask($tasks, $input['title'], $due);
+        $priority = $input['priority'] ?? 3;
+        $due_date = $input['due_date'] ?? null;
+        $task = addTask($tasks, $input['title'], $priority, $due_date);
         saveTasks($dataFile, $tasks);
         echo json_encode($task);
         break;
@@ -51,7 +55,4 @@ switch ($action) {
         }));
         echo json_encode($results);
         break;
-    default:
-        http_response_code(400);
-        echo json_encode(["error" => "Unknown action"]);
 }
