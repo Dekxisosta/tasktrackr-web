@@ -10,7 +10,11 @@
     <h1>TaskTrackr</h1>
     <form id="task-form">
       <input type="text" id="title" placeholder="New task..." required>
-      <input type="date" id="due_date">
+      <select id="priority">
+          <option value="1">High</option>
+          <option value="2" selected>Medium</option>
+          <option value="3">Low</option>
+      </select>
       <button type="submit">Add Task</button>
     </form>
     <input type="text" id="search" placeholder="Search tasks...">
