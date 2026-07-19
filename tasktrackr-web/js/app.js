@@ -7,9 +7,12 @@ async function loadTasks() {
 }
 
 function renderTask(task) {
-  return `<li class="task-item" data-id="${task.id}">
-    <span>${task.title}</span>
-  </li>`;
+    const overdue = task.due_date && new Date(task.due_date) < new Date()
+        && task.status !== "done";
+    return `<li class="task-item ${overdue ? 'overdue' : ''}" data-id="${task.id}">
+        <span>${task.title}</span>
+        <span class="due-date">${task.due_date ? "Due " + task.due_date : ""}</span>
+    </li>`;
 }
 
 function renderTasks(tasks) {
@@ -18,15 +21,16 @@ function renderTasks(tasks) {
 }
 
 document.getElementById("task-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const title = document.getElementById("title").value;
-  await fetch(`${API_URL}?action=add`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title })
-  });
-  document.getElementById("title").value = "";
-  loadTasks();
+    e.preventDefault();
+    const title = document.getElementById("title").value;
+    const due_date = document.getElementById("due_date").value;
+    await fetch(`${API_URL}?action=add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, due_date })
+    });
+    document.getElementById("title").value = "";
+    loadTasks();
 });
 
 document.getElementById("search").addEventListener("input", async (e) => {
